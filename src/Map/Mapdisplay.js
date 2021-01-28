@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import Map from "ol/Map";
 import View from "ol/View";
 import OSM from "ol/source/OSM";
@@ -7,99 +7,101 @@ import {fromLonLat} from "ol/proj";
 import {Fill, Icon, Stroke, Style} from 'ol/style';
 import {LineString, Point, Polygon} from 'ol/geom';
 import {
-  Pointer as PointerInteraction,
-  defaults as defaultInteractions,
+    Pointer as PointerInteraction,
+    defaults as defaultInteractions,
 } from 'ol/interaction';
 import {Vector as VectorSource} from 'ol/source';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
 import Feature from "ol/Feature";
 
 const FixedCoords = {
-  toronto: [-79.3871, 43.6426],
-  west_bound: [-79.79959268124549, 43.45345748942859],
-  east_bound:[-78.84378213239296,44.251140933010575]
+    toronto: [-79.3871, 43.6426],
+    west_bound: [-79.79959268124549, 43.45345748942859],
+    east_bound: [-78.84378213239296, 44.251140933010575]
 }
 
 class PublicMap extends Component {
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    this.state = {
-      center: fromLonLat(FixedCoords.toronto),
-      zoom: 10 ,
-      bounds: fromLonLat(FixedCoords.west_bound).concat(fromLonLat(FixedCoords.east_bound)),
-      pointerCoords: fromLonLat(FixedCoords.toronto),
-      pointer: new Feature(new Point(fromLonLat(FixedCoords.toronto)))
-    };
+        this.state = {
+            center: fromLonLat(FixedCoords.toronto),
+            zoom: 10,
+            bounds: fromLonLat(FixedCoords.west_bound).concat(fromLonLat(FixedCoords.east_bound)),
+            pointCoords: fromLonLat(FixedCoords.toronto)
+        };
 
-    this.olmap = new Map({
-      target: null,
-      layers: [
-          new TileLayer({
-            source: new OSM()
-          }),
-          new VectorLayer({
-            source: new VectorSource({
-              features: [this.state.pointer]
+        var pointFeature = new Feature(new Point(this.state.pointCoords));
+
+        this.olmap = new Map({
+            target: null,
+            layers: [
+                new TileLayer({
+                    source: new OSM()
+                }),
+                new VectorLayer({
+                    source: new VectorSource({
+                        features: [pointFeature]
+                    }),
+                    style: new Style({
+                        image: new Icon({
+                            anchor: [0.5, 46],
+                            anchorXUnits: 'fraction',
+                            anchorYUnits: 'pixels',
+                            opacity: 0.95,
+                            src: './pointer.png',
+                        }), stroke: new Stroke({
+                            width: 3,
+                            color: [255, 0, 0, 1],
+                        }), fill: new Fill({
+                            color: [0, 0, 255, 0.6],
+                        }),
+                    })
+                })
+            ],
+            view: new View({
+                center: this.state.center,
+                zoom: this.state.zoom,
+                // extent: this.state.bounds
             }),
-            style: new Style({
-              image: new Icon({
-                anchor: [0.5, 46],
-                anchorXUnits: 'fraction',
-                anchorYUnits: 'pixels',
-                opacity: 0.95,
-                src: 'public/locationpin.png',
-              }),
-            })
-          })
-      ],
-      view: new View({
-        center: this.state.center,
-        zoom: this.state.zoom,
-        extent: this.state.bounds
-      }),
-    });
+        });
+    }
 
+    updateMap() {
+        this.olmap.getView().setCenter(this.state.center);
+        this.olmap.getView().setZoom(this.state.zoom);
+    }
 
-  }
+    componentDidMount() {
+        this.olmap.setTarget("map");
+        // this.setState({pointer: new Feature(new Point(this.state.pointerCoords))})
+        // Listen to map changes
+        this.olmap.on("moveend", () => {
+            let center = this.olmap.getView().getCenter();
+            let zoom = this.olmap.getView().getZoom();
+            this.setState({center, zoom});
+        });
+    }
 
-  updateMap() {
-    this.olmap.getView().setCenter(this.state.center);
-    this.olmap.getView().setZoom(this.state.zoom);
-    console.log(this.olmap.getLayers())
-  }
+    shouldComponentUpdate(nextProps, nextState) {
+        let center = this.olmap.getView().getCenter();
+        let zoom = this.olmap.getView().getZoom();
+        if (center === nextState.center && zoom === nextState.zoom) return false;
+        return true;
+    }
 
-  componentDidMount() {
-    this.olmap.setTarget("map");
-    // this.setState({pointer: new Feature(new Point(this.state.pointerCoords))})
-    // Listen to map changes
-    this.olmap.on("moveend", () => {
-      let center = this.olmap.getView().getCenter();
-      let zoom = this.olmap.getView().getZoom();
-      this.setState({ center, zoom });
-    });
-  }
+    userAction() {
+        this.setState({center: [546000, 6868000], zoom: 5});
+    }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log("what does this do")
-    let center = this.olmap.getView().getCenter();
-    let zoom = this.olmap.getView().getZoom();
-    if (center === nextState.center && zoom === nextState.zoom) return false;
-    return true;
-  }
-
-  userAction() {
-    this.setState({ center: [546000, 6868000], zoom: 5 });
-  }
-
-  render() {
-    this.updateMap(); // Update map on render?
-    return (
-      <div id="map" style={{ width: "100%", height: "600px" }}>
-        <button>try me</button>
-      </div>
-    );
-  }
+    render() {
+        this.updateMap(); // Update map on render?
+        return (
+            <div id="map" style={{width: "100%", height: "600px"}}>
+                <button>try me</button>
+            </div>
+        );
+    }
 }
 
 export default PublicMap;
