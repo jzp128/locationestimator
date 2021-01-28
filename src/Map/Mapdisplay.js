@@ -5,7 +5,9 @@ import OSM from "ol/source/OSM";
 import 'ol/ol.css'
 import {fromLonLat} from "ol/proj";
 import {Fill, Icon, Stroke, Style} from 'ol/style';
-import {LineString, Point, Polygon} from 'ol/geom';
+import {Point, LineString} from 'ol/geom';
+import location_pin from "../resources/location_pin.png"
+
 import {
     Pointer as PointerInteraction,
     defaults as defaultInteractions,
@@ -31,7 +33,7 @@ class PublicMap extends Component {
             pointCoords: fromLonLat(FixedCoords.toronto)
         };
 
-        var pointFeature = new Feature(new Point(this.state.pointCoords));
+        let pointFeature = new Feature(new Point(this.state.pointCoords));
 
         this.olmap = new Map({
             target: null,
@@ -45,11 +47,13 @@ class PublicMap extends Component {
                     }),
                     style: new Style({
                         image: new Icon({
-                            anchor: [0.5, 46],
+                            anchor: [0.5, 0],
                             anchorXUnits: 'fraction',
                             anchorYUnits: 'pixels',
+                            anchorOrigin: 'bottom-right',
                             opacity: 0.95,
-                            src: './pointer.png',
+                            scale:0.05,
+                            src: location_pin,
                         }), stroke: new Stroke({
                             width: 3,
                             color: [255, 0, 0, 1],
