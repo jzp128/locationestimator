@@ -3,6 +3,7 @@ import './App.css';
 import './Map/Mapdisplay'
 
 import Mapdisplay from "./Map/Mapdisplay";
+import PhotoViewer from "./PanoramicViewer/PhotoViewer";
 
 function App() {
 
@@ -10,6 +11,7 @@ function App() {
     return (
         <div className="App">
             <Mapdisplay/>
+            <PhotoViewer/>
         </div>
     );
 }
