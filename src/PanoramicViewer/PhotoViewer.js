@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {Pannellum} from "pannellum-react";
 import testpan from "../resources/testcntower4 1.png"
+import "./PhotoViewer.css"
 
 class PhotoViewer extends Component {
     constructor(props) {
@@ -12,27 +13,20 @@ class PhotoViewer extends Component {
 
     render() {
         return (
-            <div>
+            <div className="PhotoContainer">
                 <Pannellum
                     width="100%"
-                    height="500px"
+                    height="100%"
                     image={testpan}
                     pitch={10}
                     yaw={180}
-                    hfov={110}
-                    autoLoad
+                    hfov={1}
+                    autoLoad10
                     showZoomCtrl={false}
                     onLoad={() => {
                         console.log("panorama loaded");
                     }}
                 >
-                    <Pannellum.Hotspot
-                        type="custom"
-                        pitch={31}
-                        yaw={150}
-                        handleClick={(evt, name) => console.log(name)}
-                        name="hs1"
-                    />
                 </Pannellum>
             </div>
         );

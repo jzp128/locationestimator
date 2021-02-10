@@ -4,16 +4,12 @@ import View from "ol/View";
 import OSM from "ol/source/OSM";
 import 'ol/ol.css'
 import {fromLonLat} from "ol/proj";
-import {Fill, Icon, Stroke, Style} from 'ol/style';
-import {Point, LineString} from 'ol/geom';
+import {Icon, Style} from 'ol/style';
+import {Point} from 'ol/geom';
 import Collection from 'ol/Collection'
 import location_pin from "../resources/location_pin.png"
 import Translate from "ol/interaction/Translate";
 
-import {
-    Pointer as PointerInteraction,
-    defaults as defaultInteractions,
-} from 'ol/interaction';
 
 import {Vector as VectorSource} from 'ol/source';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
@@ -69,12 +65,7 @@ class PublicMap extends Component {
                             opacity: 0.95,
                             scale: 0.05,
                             src: location_pin,
-                        }), stroke: new Stroke({
-                            width: 3,
-                            color: [255, 0, 0, 1],
-                        }), fill: new Fill({
-                            color: [0, 0, 255, 0.6],
-                        }),
+                        })
                     })
                 })
             ],
@@ -86,11 +77,6 @@ class PublicMap extends Component {
         });
 
         this.olmap.addInteraction(this.translate);
-        // this.olmap.on('pointermove', function(e) {
-        //     if (e.dragging) return;
-        //     let hit = this.olmap.hasFeatureAtPixel(this.olmap.getEventPixel(e.originalEvent));
-        //     this.olmap.getTargetElement().style.cursor = hit ? 'pointer' : '';
-        // });
     }
 
     updatePointer(evt) {
@@ -120,19 +106,14 @@ class PublicMap extends Component {
     shouldComponentUpdate(nextProps, nextState) {
         let center = this.olmap.getView().getCenter();
         let zoom = this.olmap.getView().getZoom();
-        if (center === nextState.center && zoom === nextState.zoom) return false;
-        return true;
-    }
-
-    userAction() {
-        this.setState({center: [546000, 6868000], zoom: 5});
+        return !(center === nextState.center && zoom === nextState.zoom);
     }
 
     render() {
         this.updateMap(); // Update map on render?
         return (
             <div id="map" style={{width: "100%", height: "600px"}}>
-                <Button variant="contained" color="primary" onClick={this.tryMeButton}>Primary</Button>
+                <Button variant="contained" color="primary" onClick={this.tryMeButton}>GUESS</Button>
             </div>
         );
     }
